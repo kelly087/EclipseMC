@@ -1,0 +1,4 @@
+blank,ion_cannon,nuclear_source,nuclear_drive
+hull,blank,ion_cannon,nuclear_source,electron_computer,nuclear_drive
+ion_cannon,hull,blank,hull,nuclear_source,ion_cannon,electron_computer,nuclear_drive
+hull,ion_cannon,hull,blank,electron_computer
