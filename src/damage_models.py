@@ -44,6 +44,7 @@ class DefaultDamageDistributionModel(DamageDistributionModel):
 
                 # Check if roll can hit ship
                 if atk[0] == 6 or atk[0] + atk[1] - ship[0].get_shield() >= 6:
+                    # Check if can one shot
                     if ship[0].get_hp() <= atk[2]:
                         # Damage ship
                         ship[0].take_damage(atk[2])
