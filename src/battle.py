@@ -37,15 +37,15 @@ class Battle(object):
         speed = 8
         while speed >= 0:
             d_attacks = []
-            # Get all attacks from offensive ships in initiative group
+            # Get all attacks from defensive ships in initiative group
             for ship in defense.get_ships_by_init(speed):
                 for attack in ship.get_attacks():
                     d_attacks.append(attack)
 
-            # Apply all damage from defensive group
+            # Apply all damage from defensive group to offensive ships
             if len(d_attacks) > 0:
                 offense.apply_damage(
-                    sorted(d_attacks, key=lambda atk:atk[1]),
+                    sorted(d_attacks, key=lambda atk:atk[2]),
                     damage_models.DefaultDamageDistributionModel())
 
 
@@ -86,3 +86,6 @@ if __name__ == '__main__':
     print(defense)
     battle = Battle("Test battle", offense, defense)
     battle.simulate(1)
+
+    print(offense)
+    print(defense)

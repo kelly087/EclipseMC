@@ -22,7 +22,7 @@ class Fleet():
         shipstring = ""
         if self.shiplist is not None:
             for i, s in zip(range(len(self.shiplist)),self.shiplist):
-                shipstring = shipstring+"\t"+str(i)+". "+s.name+"\n"
+                shipstring = shipstring+"\t"+str(i)+". "+s.name + "\t" + str(s.get_hp()) + "\n"
         return "%s:\n%s"%(self.name,shipstring)
 
     def apply_damage(self, attack_list, damage_distribution_model):

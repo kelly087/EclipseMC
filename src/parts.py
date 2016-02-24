@@ -1,10 +1,4 @@
 """
-This is a template for ship parts.
-"""
-
-import weapons as weapon_objects
-
-"""
 Basic ship part parent class.
 """
 class Part(object):

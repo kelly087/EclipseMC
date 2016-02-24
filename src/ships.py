@@ -31,7 +31,8 @@ class Ship(object):
     def get_attacks(self):
         '''
         retruns an array of tuples with:
-            corrected dice roll (roll + targetting computer)
+            dice roll
+            targetting computer
             damage possible from attack
         '''
         shots = []
@@ -44,34 +45,30 @@ class Ship(object):
         # append all parts that are weapons with a random roll for that weapon
         for part in self.parts:
             if part.is_weapon:
-                shots.append((random.randint(1,6) + aim, part.weapon_damage))
+                shots.append((random.randint(1,6), aim, part.weapon_damage))
 
         return shots
-
-
-    def attack(self):
-        aim = self.aim
-        weaponlist = []
-        barrage = []
-        for part in self.parts:
-            aim+=part.aim
-            if part.weapons is not None:
-                for weapon in part.weapons:
-                    weaponlist.append(weapon)
-        for weapon in weaponlist:
-            shot = weapon.fire()
-            shot.append(shot[0]+aim)
-            barrage.append(shot)
-        return barrage
 
     def copy(self):
         return copy_module.deepcopy(self)
 
+    def is_alive(self):
+        return self.get_hp() > 0
+
+    def take_damage(self, damage):
+        self.damage += damage
+
     def get_hull(self):
-        hull = 0
+        hull = 1 # base hull is 1
         for part in self.parts:
             hull+=part.hull
         return hull
+
+    def get_damage(self):
+        return self.damage
+
+    def get_hp(self):
+        return self.get_hull() - self.damage
 
     def get_initiative(self):
         init = self.initiative
@@ -84,14 +81,6 @@ class Ship(object):
         for part in self.parts:
             shield+=part.shield
         return shield
-
-    def swap(self,part,index):
-        if self.parts is None:
-            raise Exception("Swap attempted with no parts.")
-        if index > len(self.parts) or index < 0:
-            raise Exception("Swapped part index is invalid.")
-        self.parts[index] = part
-        return
 
 def CreateShip(ship_name, csv_line):
     '''
