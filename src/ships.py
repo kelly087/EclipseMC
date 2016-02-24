@@ -4,6 +4,7 @@ This file contains the ship parent class as well as child classes for each of th
 
 import copy as copy_module #Needed to make deep copies of ships
 import parts as ship_parts
+import random
 
 class Ship(object):
     def __init__(self,name="",aim=0,initiative=0,power=0,shield=0,parts=[],damage=0):
@@ -26,6 +27,27 @@ class Ship(object):
         if obj is None or not isinstance(obj,Ship):
             raise Exception("Cannot compare to type "+str(obj)+".")
         return cmp(-self.get_initiative(),-obj.get_initiative())
+
+    def get_attacks(self):
+        '''
+        retruns an array of tuples with:
+            corrected dice roll (roll + targetting computer)
+            damage possible from attack
+        '''
+        shots = []
+
+        # Calculate adjusted aim
+        aim = self.aim
+        for part in self.parts:
+            aim += part.aim
+
+        # append all parts that are weapons with a random roll for that weapon
+        for part in self.parts:
+            if part.is_weapon:
+                shots.append((random.randint(1,6) + aim, part.weapon_damage))
+
+        return shots
+
 
     def attack(self):
         aim = self.aim
@@ -71,18 +93,21 @@ class Ship(object):
         self.parts[index] = part
         return
 
-class Interceptor(Ship):
-    def __init__(self):
-        Ship.__init__(self,name="Interceptor",initiative=1,parts=[ship_parts.Blank(),ship_parts.Ion_cannon(),ship_parts.Nuclear_drive(),ship_parts.Nuclear_source()])
+def CreateShip(ship_name, csv_line):
+    '''
+    This function creates a ship from a name and comma separated line
+    '''
+    speed = 0
+    if ship_name == "Interceptor":
+        speed = 2
+    elif ship_name == "Cruiser":
+        speed = 1
+    elif ship_name == "Dreadnaught":
+        speed = 0
+    elif ship_name == "Starbase":
+        speed = 4
 
-if __name__ == '__main__':
-    ic = Interceptor()
-    print ic
-    ic.swap(ship_parts.Plasma_cannon(),0)
-    print ic
-    cic = ic.copy()
-    cic.swap(ship_parts.Electron_computer(),0)
-    print ic
-    print cic
-    print cic.attack()
-    print cmp(ic,cic)
+    part_list = []
+    for p in csv_line.split(','):
+        part_list.append(ship_parts.Create_Part(p))
+    return Ship(name=ship_name, parts=part_list, initiative=speed)

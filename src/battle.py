@@ -11,25 +11,58 @@ comparing two fleets.
 import copy as copy_module
 import ships
 import fleet as fleet_object
+import damage_models
 
 class Battle(object):
-    def __init__(self,name="",Ofleet=None,Dfleet=None):
+    def __init__(self, name, offense, defense):
         self.name = name
-        self.Ofleet = Ofleet
-        self.Dfleet = Dfleet
-        self.Ofleet_backup = copy_module.deepcopy(Ofleet)
-        self.Dfleet_backup = copy_module.deepcopy(Dfleet)
-        self.sort()
+        self.defense = defense
+        self.offense = offense
+        #self.Ofleet_backup = copy_module.deepcopy(Ofleet)
+        #self.Dfleet_backup = copy_module.deepcopy(Dfleet)
 
     def __str__(self):
-        return "%s:\nOffense: %sDefense: %s"%(self.name,str(self.Ofleet),str(self.Dfleet))
+        return "%s:\nOffense: %sDefense: %s"%(self.name,str(self.offense),str(self.defense))
+
+    def simulate(self, num):
+        '''
+        Simulates battles num times
+        '''
+        if self.offense == None or self.defense == None:
+            print("Missing fleet information")
+        
+        print("Simulation begins:")
+
+        # Reverse iteration, defensive fires first
+        speed = 8
+        while speed >= 0:
+            d_attacks = []
+            # Get all attacks from offensive ships in initiative group
+            for ship in defense.get_ships_by_init(speed):
+                for attack in ship.get_attacks():
+                    d_attacks.append(attack)
+
+            # Apply all damage from defensive group
+            if len(d_attacks) > 0:
+                offense.apply_damage(
+                    sorted(d_attacks, key=lambda atk:atk[1]),
+                    damage_models.DefaultDamageDistributionModel())
+
+
+            # Get all defensive attacks
+            #for ship in offense.get_ships_by_init(speed):
+
+            # Apply all damage from offensive group
+
+            speed -= 1
+
 
     def get_attacks(self):
         all_attacks = []
-        if self.Ofleet is not None:
-            all_attacks.append(self.Ofleet.attack())
-        if self.Dfleet is not None:
-            all_attacks.append(self.Dfleet.attack())
+        if self.offense is not None:
+            all_attacks.append(self.offense.attack())
+        if self.defense is not None:
+            all_attacks.append(self.defense.attack())
         return all_attacks
 
     def get_hulls(self):
@@ -44,16 +77,12 @@ class Battle(object):
         #INCOMPLETE
         return
 
-    def sort(self):
-        self.Ofleet.sort()
-        self.Dfleet.sort()
-        self.Ofleet_backup.sort()
-        self.Dfleet_backup.sort()
-
 if __name__ == '__main__':
-    Ofleet = fleet_object.Fleet("Player A",[ships.Interceptor(),ships.Interceptor()])
-    Dfleet = fleet_object.Fleet("Player A",[ships.Interceptor()])
-    print Ofleet
-    battle = Battle("Test battle",Ofleet,Dfleet)
-    print battle
-    print battle.get_attacks()
+    offense = fleet_object.Fleet(name="Offense")
+    offense.load_from_file('human.eFu', 1, 1, 1, 1)
+    defense = fleet_object.Fleet(name="Defense")
+    defense.load_from_file('human.eFu', 0, 0, 1, 0)
+    print(offense)
+    print(defense)
+    battle = Battle("Test battle", offense, defense)
+    battle.simulate(1)
