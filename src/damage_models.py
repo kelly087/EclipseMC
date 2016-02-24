@@ -39,8 +39,8 @@ class DefaultDamageDistributionModel(DamageDistributionModel):
 
             # Check if can one shot
             for ship in ships:
-                if not ship[0].is_alive():
-                    continue # Skip dead ships
+                if not ship[0].is_alive() or ship[1] == 0:
+                    continue # Skip dead ships and skip ships with no threat
 
                 # Check if roll can hit ship
                 if atk[0] == 6 or atk[0] + atk[1] - ship[0].get_shield() >= 6:
